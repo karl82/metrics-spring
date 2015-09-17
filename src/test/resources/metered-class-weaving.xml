@@ -28,7 +28,10 @@
 	<metrics:annotation-driven weaving="true"/>
     <context:load-time-weaver/>
     <metrics:metric-registry id="metricRegistry"/>
-    <bean id="metricsPointcutAspect" class="com.ryantenney.metrics.spring.MetricsPointcutAspect" factory-method="aspectOf">
+    <bean id="countedMetricsAspect" class="com.ryantenney.metrics.spring.CountedMetricsAspect" factory-method="aspectOf">
+        <property name="metricRegistry" ref="metricRegistry"/>
+    </bean>
+    <bean id="timedMetricsAspect" class="com.ryantenney.metrics.spring.TimedMetricsAspect" factory-method="aspectOf">
         <property name="metricRegistry" ref="metricRegistry"/>
     </bean>
 

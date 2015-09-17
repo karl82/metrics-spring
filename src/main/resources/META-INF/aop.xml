@@ -4,6 +4,7 @@
     <weaver options="-verbose -showWeaveInfo -debug"/>
     <aspects>
         <!-- weave in just this aspect -->
-        <aspect name="com.ryantenney.metrics.spring.MetricsPointcutAspect"/>
+        <aspect name="com.ryantenney.metrics.spring.CountedMetricsAspect"/>
+        <aspect name="com.ryantenney.metrics.spring.TimedMetricsAspect"/>
     </aspects>
 </aspectj>

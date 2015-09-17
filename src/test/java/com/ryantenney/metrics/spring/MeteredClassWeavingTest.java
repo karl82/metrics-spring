@@ -76,11 +76,11 @@ public class MeteredClassWeavingTest {
 
 	@Test
 	public void timedMethod() throws Throwable {
-		Timer timedMethod = forTimedMethod(metricRegistry, MeteredClass.class, "timedMethod");
 
-		assertEquals(0, timedMethod.getCount());
+//		assertEquals(0, timedMethod.getCount());
 
 		meteredClass.timedMethod(false);
+		Timer timedMethod = forTimedMethod(metricRegistry, MeteredClass.class, "timedMethod");
 		assertEquals(1, timedMethod.getCount());
 
 		// getCount increments even when the method throws an exception
