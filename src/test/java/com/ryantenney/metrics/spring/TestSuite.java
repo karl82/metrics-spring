@@ -25,18 +25,19 @@ import com.codahale.metrics.SharedMetricRegistries;
 @RunWith(Suite.class)
 // @formatter:off
 @SuiteClasses({
-		AopFieldInjectionInteractionTest.class,
-		CovariantReturnTypeTest.class,
-		EnableMetricsTest.class,
-		HealthCheckTest.class,
-		MeteredClassImpementsInterfaceTest.class,
-		MeteredClassTest.class,
-		MeteredInterfaceTest.class,
-		MetricAnnotationTest.class,
-		ProxyTargetClassTest.class,
-		RegistryTest.class,
-		ReporterTest.class,
-		SharedRegistryTest.class
+//		AopFieldInjectionInteractionTest.class,
+//		CovariantReturnTypeTest.class,
+//		EnableMetricsTest.class,
+//		HealthCheckTest.class,
+//		MeteredClassImpementsInterfaceTest.class,
+//		MeteredClassTest.class,
+//		MeteredInterfaceTest.class,
+//		MetricAnnotationTest.class,
+//		ProxyTargetClassTest.class,
+//		RegistryTest.class,
+//		ReporterTest.class,
+//		SharedRegistryTest.class
+		MeteredClassWeavingTest.class
 	})
 // @formatter:on
 public class TestSuite {

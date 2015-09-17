@@ -51,72 +51,84 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			healthCheckBeanName = registerComponent(parserContext, build(HealthCheckRegistry.class, source, ROLE_APPLICATION));
 		}
 
-		final ProxyConfig proxyConfig = new ProxyConfig();
-
-		if (StringUtils.hasText(element.getAttribute("expose-proxy"))) {
-			proxyConfig.setExposeProxy(Boolean.valueOf(element.getAttribute("expose-proxy")));
+		boolean useWeaving = false;
+		if (StringUtils.hasText(element.getAttribute("weaving"))) {
+			useWeaving = Boolean.valueOf(element.getAttribute("weaving"));
 		}
 
-		if (StringUtils.hasText(element.getAttribute("proxy-target-class"))) {
-			proxyConfig.setProxyTargetClass(Boolean.valueOf(element.getAttribute("proxy-target-class")));
+		if (!useWeaving) {
+			final ProxyConfig proxyConfig = new ProxyConfig();
+
+			if (StringUtils.hasText(element.getAttribute("expose-proxy"))) {
+				proxyConfig.setExposeProxy(Boolean.valueOf(element.getAttribute("expose-proxy")));
+			}
+
+			if (StringUtils.hasText(element.getAttribute("proxy-target-class"))) {
+				proxyConfig.setProxyTargetClass(Boolean.valueOf(element.getAttribute("proxy-target-class")));
+			}
+
+			//@formatter:off
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("exceptionMetered")
+														.addConstructorArgReference(metricsBeanName)
+														.addConstructorArgValue(proxyConfig));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("metered")
+														.addConstructorArgReference(metricsBeanName)
+														.addConstructorArgValue(proxyConfig));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("timed")
+														.addConstructorArgReference(metricsBeanName)
+														.addConstructorArgValue(proxyConfig));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("counted")
+														.addConstructorArgReference(metricsBeanName)
+														.addConstructorArgValue(proxyConfig));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("gaugeField")
+														.addConstructorArgReference(metricsBeanName));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("gaugeMethod")
+														.addConstructorArgReference(metricsBeanName));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("cachedGauge")
+														.addConstructorArgReference(metricsBeanName));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("metric")
+														.addConstructorArgReference(metricsBeanName));
+
+			registerComponent(parserContext,
+												build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
+														.setFactoryMethod("healthCheck")
+														.addConstructorArgReference(healthCheckBeanName));
+
+			//@formatter:on
+		} else {
+			registerWeaving();
 		}
-
-		//@formatter:off
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("exceptionMetered")
-					.addConstructorArgReference(metricsBeanName)
-					.addConstructorArgValue(proxyConfig));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("metered")
-					.addConstructorArgReference(metricsBeanName)
-					.addConstructorArgValue(proxyConfig));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("timed")
-					.addConstructorArgReference(metricsBeanName)
-					.addConstructorArgValue(proxyConfig));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("counted")
-					.addConstructorArgReference(metricsBeanName)
-					.addConstructorArgValue(proxyConfig));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("gaugeField")
-					.addConstructorArgReference(metricsBeanName));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("gaugeMethod")
-					.addConstructorArgReference(metricsBeanName));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("cachedGauge")
-					.addConstructorArgReference(metricsBeanName));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("metric")
-					.addConstructorArgReference(metricsBeanName));
-
-		registerComponent(parserContext,
-				build(MetricsBeanPostProcessorFactory.class, source, ROLE_INFRASTRUCTURE)
-					.setFactoryMethod("healthCheck")
-					.addConstructorArgReference(healthCheckBeanName));
-
-		//@formatter:on
-
 		parserContext.popAndRegisterContainingComponent();
 
 		return null;
+	}
+
+	private void registerWeaving() {
+
 	}
 
 	private BeanDefinitionBuilder build(Class<?> klazz, Object source, int role) {

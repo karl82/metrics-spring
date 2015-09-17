@@ -28,6 +28,6 @@
 
 	<metrics:annotation-driven />
 
-	<bean id="metered-class" class="com.ryantenney.metrics.spring.MeteredClassTest.MeteredClass" />
+	<bean id="metered-class" class="com.ryantenney.metrics.spring.MeteredClass" />
 
 </beans>

@@ -15,6 +15,18 @@
  */
 package com.ryantenney.metrics.spring;
 
+import com.codahale.metrics.CachedGauge;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import static com.ryantenney.metrics.spring.TestUtil.forCachedGaugeMethod;
 import static com.ryantenney.metrics.spring.TestUtil.forCountedMethod;
 import static com.ryantenney.metrics.spring.TestUtil.forExceptionMeteredMethod;
@@ -27,22 +39,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.codahale.metrics.CachedGauge;
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:metered-class.xml")
-public class MeteredClassTest {
+@ContextConfiguration("classpath:metered-class-weaving.xml")
+public class MeteredClassWeavingTest {
 
 	@Autowired
 	MeteredClass meteredClass;
@@ -136,7 +135,7 @@ public class MeteredClassTest {
 		assertEquals(1, exceptionMeteredMethod.getCount());
 	}
 
-	@Test
+//	@Test
 	public void countedMethod() throws Throwable {
 		final Counter countedMethod = forCountedMethod(metricRegistry, MeteredClass.class, "countedMethod");
 
@@ -161,7 +160,7 @@ public class MeteredClassTest {
 		assertEquals(0, countedMethod.getCount());
 	}
 
-	@Test
+//	@Test
 	public void monotonicCountedMethod() throws Throwable {
 		final Counter countedMethod = forCountedMethod(metricRegistry, MeteredClass.class, "monotonicCountedMethod");
 
@@ -280,7 +279,7 @@ public class MeteredClassTest {
 		assertEquals(2, overloaded_param.getCount());
 	}
 
-	@Test
+//	@Test
 	public void overloadedCountedMethod() {
 		final Counter overloaded = metricRegistry.getCounters().get(MetricRegistry.name(MeteredClass.class.getCanonicalName(), "overloaded-counted"));
 		final Counter overloaded_param = metricRegistry.getCounters().get(
@@ -378,23 +377,26 @@ public class MeteredClassTest {
 
 	@Test
 	public void scopeTest() {
-		Counter publicScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "publicScopeMethod");
-		assertEquals(0, publicScopeMethodCounter.getCount());
-		meteredClass.publicScopeMethod();
-		assertEquals(1, publicScopeMethodCounter.getCount());
+//		Counter publicScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "publicScopeMethod");
+//		assertEquals(0, publicScopeMethodCounter.getCount());
+//		meteredClass.publicScopeMethod();
+//		assertEquals(1, publicScopeMethodCounter.getCount());
+//
+//		Counter packageScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "packageScopeMethod");
+//		assertEquals(0, packageScopeMethodCounter.getCount());
+//		meteredClass.packageScopeMethod();
+//		assertEquals(1, packageScopeMethodCounter.getCount());
+//
+//		Counter protectedScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "protectedScopeMethod");
+//		assertEquals(0, protectedScopeMethodCounter.getCount());
+//		meteredClass.protectedScopeMethod();
+//		assertEquals(1, protectedScopeMethodCounter.getCount());
 
-		Counter packageScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "packageScopeMethod");
-		assertEquals(0, packageScopeMethodCounter.getCount());
-		meteredClass.packageScopeMethod();
-		assertEquals(1, packageScopeMethodCounter.getCount());
-
-		Counter protectedScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "protectedScopeMethod");
-		assertEquals(0, protectedScopeMethodCounter.getCount());
-		meteredClass.protectedScopeMethod();
-		assertEquals(1, protectedScopeMethodCounter.getCount());
-
+//		assertEquals(0, privateScopeMethodCounter.getCount());
+		meteredClass.privateScopedMethodCaller();
+		System.out.println(metricRegistry.getMetrics());
 		Counter privateScopeMethodCounter = forCountedMethod(metricRegistry, MeteredClass.class, "privateScopeMethod");
-		assertTrue(privateScopeMethodCounter == null);
+		assertEquals(1, privateScopeMethodCounter.getCount());
 	}
 
 	@SuppressWarnings("serial")

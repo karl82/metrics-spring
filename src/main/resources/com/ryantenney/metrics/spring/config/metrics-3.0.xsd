@@ -55,6 +55,7 @@
 			</xsd:attribute>
 			<xsd:attribute name="expose-proxy" type="xsd:boolean" use="optional"/>
 			<xsd:attribute name="proxy-target-class" type="xsd:boolean" use="optional"/>
+			<xsd:attribute name="weaving" type="xsd:boolean" use="optional" default="false"/>
 		</xsd:complexType>
 	</xsd:element>
 

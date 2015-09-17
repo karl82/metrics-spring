@@ -64,4 +64,6 @@ public @interface EnableMetrics {
 	 */
 	boolean proxyTargetClass() default false;
 
+	boolean weaving() default false;
+
 }
